@@ -1,7 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Autosuggest from 'react-autosuggest'
-
-import InputText from './InputText'
 
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
@@ -89,11 +87,15 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function DropdownMention() {
+export default function DropdownMention(props) {
     const classes = useStyles()
     const [text, setText] = useState('')
     const [currentMention, setCurrentMention] = useState('')
     const [stateSuggestions, setSuggestions] = useState([])
+
+    useEffect(() => {
+        setText('')
+    }, [props.emptyInput])
 
     const handleSuggestionsFetchRequested = ({ value }) => {
         const suggestions = getSuggestions(currentMention)
@@ -115,7 +117,6 @@ export default function DropdownMention() {
         } else {
             setCurrentMention('') 
         }
-        
         setText(newValue)
     }
 
@@ -128,11 +129,12 @@ export default function DropdownMention() {
     }
 
     const autosuggestProps = {
-        renderInputComponent: InputText,
+        renderInputComponent: props.inputText,
         suggestions: stateSuggestions,
         onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
         onSuggestionsClearRequested: handleSuggestionsClearRequested,
         onSuggestionSelected: addSuggestionToText,
+        focusInputOnSuggestionClick: false,
         shouldRenderSuggestions,
         getSuggestionValue,
         renderSuggestion,

@@ -24,13 +24,14 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles()
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState(JSON.parse(localStorage.getItem('posts')) || [])
   const [emptyInput, setEmptyInput] = useState(true)
   const inputEl = useRef()
 
   useEffect(() => {
     setEmptyInput(true)
-  })
+    localStorage.setItem('posts', JSON.stringify(posts))
+  }, [posts])
 
   const addPost = (event) => {
     event.preventDefault()

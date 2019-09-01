@@ -7,58 +7,6 @@ import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
 import { makeStyles } from '@material-ui/core/styles'
 
-const suggestions = [{"name":"Rita","id":"118276"},{"name":"Rita .S123","id":"36910238"},{"name":"Rita 070749","id":"29219624"},{"name":"Rita 2210","id":"26194428"},{"name":"Rita 3883","id":"2075602"},{"name":"Rita 420 mpg","id":"30716040"},{"name":"Rita A. Yuliana","id":"36922429"},{"name":"Rita Abihail Mustafa Morel","id":"4967280"},{"name":"Rita Acharya","id":"28842594"},{"name":"Rita Ackermann","id":"38480826"}]
-
-function renderSuggestion(suggestion, { query, isHighlighted }) {
-    const matches = match(suggestion.name, query)
-    const parts = parse(suggestion.name, matches)
-
-    return (
-        <MenuItem selected={isHighlighted} component="div">
-            <div>
-                {parts.map(part => (
-                <span key={part.text} style={{ fontWeight: part.highlight ? 500 : 400 }}>
-                    {part.text}
-                </span>
-                ))}
-            </div>
-        </MenuItem>
-    )
-}
-
-
-const fetchUsers = (query) => {
-    // const url = `https://community.fandom.com/api.php?action=query&list=allusers&auprefix=${query}&format=json`;
-    // let headers = new Headers();
-
-    // headers.append('Content-Type', 'application/json');
-    // headers.append('Accept', 'application/json');
-    // headers.append('Origin','http://localhost:3000');
-    // try {
-    //     const response = await fetch(url, {
-    //         mode: 'no-cors',
-    //         method: 'POST',
-    //         headers: headers
-    //     })
-    //     return await response.json()
-    // } catch (error) {
-    //     return error.message;
-    // }
-
-    return suggestions
-}
-
-function getSuggestions(value) {
-    return value.length === 0
-        ? []
-        // : fetchUsers(value).then(response => {
-        //     return response
-        // }).catch((error) => {
-        //     console.error(error)
-        // })
-        : fetchUsers(value)
-}
-
 const useStyles = makeStyles(theme => ({
     container: {
         position: 'relative',
@@ -85,6 +33,33 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const renderSuggestion = (suggestion, { query, isHighlighted }) => {
+    const matches = match(suggestion.name, query)
+    const parts = parse(suggestion.name, matches)
+
+    return (
+        <MenuItem selected={isHighlighted} component="div">
+            <div>
+                {parts.map(part => (
+                <span key={part.text} style={{ fontWeight: part.highlight ? 500 : 400 }}>
+                    {part.text}
+                </span>
+                ))}
+            </div>
+        </MenuItem>
+    )
+}
+
+const callBackendAPI = async (query) => {
+    const response = await fetch(`http://localhost:8080/mentions/${query}`)
+    const data = await response.json()
+
+    if (response.status !== 200) {
+        throw Error(data.message) 
+    }
+    return data;
+}
+
 export default function DropdownMention(props) {
     const classes = useStyles()
     const [text, setText] = useState('')
@@ -95,9 +70,16 @@ export default function DropdownMention(props) {
         setText('')
     }, [props.emptyInput])
 
-    const handleSuggestionsFetchRequested = ({ value }) => {
-        const suggestions = getSuggestions(currentMention)
-        setSuggestions(suggestions)
+    const handleSuggestionsFetchRequested = () => {
+        if (currentMention) {
+            callBackendAPI(currentMention)
+                .then(response => {
+                    setSuggestions(response.data.query.allusers)
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        }
     }
 
     const handleSuggestionsClearRequested = () => {
@@ -110,16 +92,8 @@ export default function DropdownMention(props) {
 
     const handleChange = () => (event, { newValue }) => {
         const lastWord = newValue.split(' ').slice(-1)[0]
-        if (lastWord.startsWith('@')) {
-            setCurrentMention(lastWord.substr(1))
-        } else {
-            setCurrentMention('') 
-        }
+        setCurrentMention(lastWord.startsWith('@') ? lastWord.substr(1) : '')
         setText(newValue)
-    }
-
-    const shouldRenderSuggestions = (value) => {
-        return currentMention.length > 0
     }
 
     const getSuggestionValue = (suggestion) => {
@@ -133,7 +107,6 @@ export default function DropdownMention(props) {
         onSuggestionsClearRequested: handleSuggestionsClearRequested,
         onSuggestionSelected: addSuggestionToText,
         focusInputOnSuggestionClick: false,
-        shouldRenderSuggestions,
         getSuggestionValue,
         renderSuggestion,
     }

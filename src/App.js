@@ -12,11 +12,14 @@ import './App.css'
 
 const useStyles = makeStyles(theme => ({
   fab: {
-      //margin: theme.spacing(1),
-      position: 'absolute',
-      top: 0,
-      right: 0,
+    margin: theme.spacing(2),
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
+  form: {
+    minHeight: theme.spacing(8),
+  }
 }))
 
 function App() {
@@ -43,28 +46,30 @@ function App() {
   }
 
   const InputText = ({ classes, inputRef = () => {}, ref, ...other }) => {
-      return (
-          <TextField
-              fullWidth
-              InputProps={{
-                  inputRef: inputEl,
-                  classes: {
-                    input: classes.input,
-                  },
-              }}
-              {...other}
-          />
-      )
+    return (
+      <TextField
+        className={classes.input}
+        fullWidth
+        InputProps={{
+            inputRef: inputEl,
+            classes: {
+              input: classes.input,
+            },
+        }}
+        {...other}
+      />
+    )
   }
 
   return (
     <div className="App">
-      <form onSubmit={addPost}>
+      <form onSubmit={addPost} className={classes.form}>
         <DropdownMention inputText={InputText} emptyInput={emptyInput}/>
         <Fab
           color="primary" 
           aria-label="add" 
           className={classes.fab}
+          size="small"
           type="submit"
         >
             <AddIcon />

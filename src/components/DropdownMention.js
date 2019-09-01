@@ -62,6 +62,8 @@ function getSuggestions(value) {
 const useStyles = makeStyles(theme => ({
     container: {
         position: 'relative',
+        margin: theme.spacing(2),
+        height: theme.spacing(4),
     },
     suggestionsContainerOpen: {
         position: 'absolute',

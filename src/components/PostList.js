@@ -5,7 +5,9 @@ import PostItem from './PostItem'
 
 const useStyles = makeStyles(theme => ({
     root: {
-        listStyle: 'none'
+        listStyle: 'none',
+        paddingLeft: 0,
+        marginTop: theme.spacing(2),
     },
 }))
 

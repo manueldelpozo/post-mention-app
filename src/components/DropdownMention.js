@@ -60,10 +60,6 @@ function getSuggestions(value) {
 }
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        height: 250,
-        flexGrow: 1,
-    },
     container: {
         position: 'relative',
     },
@@ -146,7 +142,7 @@ export default function DropdownMention(props) {
                 {...autosuggestProps}
                 inputProps={{
                     classes,
-                    id: 'react-autosuggest-simple',
+                    id: 'react-autosuggest',
                     label: 'Add a post',
                     placeholder: 'To mention type @',
                     value: text,

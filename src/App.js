@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import DropdownMention from './components/DropdownMention'
-import TextField from '@material-ui/core/TextField'
+import PostList from './components/PostList'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import TextField from '@material-ui/core/TextField'
 
 import './App.css'
 
@@ -33,7 +34,10 @@ function App() {
 
     const newValue = inputEl.current.value
     if (newValue.length > 0) {
-      setPosts([...posts, newValue])
+      setPosts([...posts, {
+        text: newValue,
+        timestamp: Date.now()
+      }])
       setEmptyInput(false)
     }
   }
@@ -66,7 +70,7 @@ function App() {
             <AddIcon />
         </Fab>
       </form>
-    
+      <PostList posts={posts} />
     </div>
   );
 }

@@ -41,6 +41,10 @@ export default function PostItem({ text, timestamp }) {
         return `${date} ${time}`
     }
 
+    const highlightMentions = (text) => {
+        return text.split(' ').map(word => word.startsWith('@') ? `<mark>${word}</mark>` : word).join(' ')
+    }
+
     return (
         <li className={classes.root}>
             <Message />
@@ -49,9 +53,7 @@ export default function PostItem({ text, timestamp }) {
                     {datetime}
                 </Typography>
                 <Divider className={classes.divider} orientation="vertical" />
-                <Typography component="span">
-                    {text}
-                </Typography>
+                <div dangerouslySetInnerHTML={{__html: highlightMentions(text)}} />
             </Paper>
         </li>
     )

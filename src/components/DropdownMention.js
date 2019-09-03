@@ -41,7 +41,7 @@ const renderSuggestion = (suggestion, { query, isHighlighted }) => {
         <MenuItem selected={isHighlighted} component="div">
             <div>
                 {parts.map(part => (
-                <span key={part.text} style={{ fontWeight: part.highlight ? 500 : 400 }}>
+                <span key={part.text} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                     {part.text}
                 </span>
                 ))}
@@ -64,15 +64,23 @@ export default function DropdownMention(props) {
     const classes = useStyles()
     const [text, setText] = useState('')
     const [currentMention, setCurrentMention] = useState('')
-    const [stateSuggestions, setSuggestions] = useState([])
+    const [suggestions, setSuggestions] = useState([])
 
     useEffect(() => {
         setText('')
     }, [props.emptyInput])
 
-    const handleSuggestionsFetchRequested = () => {
-        if (currentMention) {
-            callBackendAPI(currentMention)
+    const handleChange = () => (event, { newValue }) => {
+        setText(newValue)
+    }
+
+    const onSuggestionsFetchRequested = ({ value }) => {
+        const lastWord = value.split(' ').slice(-1)[0]
+        const mention = lastWord.startsWith('@') ? lastWord.substr(1) : ''
+
+        setCurrentMention(mention)
+        if (mention) {
+            callBackendAPI(mention)
                 .then(response => {
                     setSuggestions(response.data.query.allusers)
                 })
@@ -82,29 +90,22 @@ export default function DropdownMention(props) {
         }
     }
 
-    const handleSuggestionsClearRequested = () => {
+    const onSuggestionsClearRequested = () => {
         setSuggestions([])
     }
 
     const addSuggestionToText = (event, { suggestionValue }) => {
+        event.preventDefault()
         setText(text.replace(currentMention, suggestionValue))
     }
 
-    const handleChange = () => (event, { newValue }) => {
-        const lastWord = newValue.split(' ').slice(-1)[0]
-        setCurrentMention(lastWord.startsWith('@') ? lastWord.substr(1) : '')
-        setText(newValue)
-    }
-
-    const getSuggestionValue = (suggestion) => {
-        return suggestion.name
-    }
+    const getSuggestionValue = (suggestion) => suggestion.name
 
     const autosuggestProps = {
         renderInputComponent: props.inputText,
-        suggestions: stateSuggestions,
-        onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
-        onSuggestionsClearRequested: handleSuggestionsClearRequested,
+        suggestions,
+        onSuggestionsFetchRequested,
+        onSuggestionsClearRequested,
         onSuggestionSelected: addSuggestionToText,
         focusInputOnSuggestionClick: false,
         getSuggestionValue,

@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import Message from '@material-ui/icons/Message'
 
+import HighlightMention from './HighlightMention'
+
 const useStyles = makeStyles(theme => ({
     root: {
         margin: theme.spacing(3),
@@ -22,6 +24,8 @@ const useStyles = makeStyles(theme => ({
         marginRight: theme.spacing(1),
     },
 }))
+
+
 
 export default function PostItem({ text, timestamp }) {
     const classes = useStyles()
@@ -41,10 +45,6 @@ export default function PostItem({ text, timestamp }) {
         return `${date} ${time}`
     }
 
-    const highlightMentions = (text) => {
-        return text.split(' ').map(word => word.startsWith('@') ? `<mark>${word}</mark>` : word).join(' ')
-    }
-
     return (
         <li className={classes.root}>
             <Message />
@@ -53,7 +53,7 @@ export default function PostItem({ text, timestamp }) {
                     {datetime}
                 </Typography>
                 <Divider className={classes.divider} orientation="vertical" />
-                <div dangerouslySetInnerHTML={{__html: highlightMentions(text)}} />
+                <HighlightMention text={text} />
             </Paper>
         </li>
     )

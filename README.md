@@ -4,10 +4,13 @@ Simple web application in React consisting of:
 
 - A text editor with one feature - @mentions. You can type in whatever text you’d like to.
 - When starting typing @<name> a dropdown is populated with existing usernames from our database. 
-The data is fetched from this API https://community.fandom.com/
+- The data is fetched from this API https://community.fandom.com/ that needs to CORS access through the Express server.
 - Select a suggestion from the list of mentions only by clicking (key events do not work as expected)
 - Enter input or click “+” button in order to add a newly created post to the list displayed below the editor.
 - The list of posts below the editor is sorted by the latest. And @mentions are highlighted.
+- The posts created stay there after refreshing the page.
+  
+Technologies used: React, React Hooks, React Autosugest, Material UI, Express, CORS, Webpack, Yarn, Concurrently
 
 
 ## Installation

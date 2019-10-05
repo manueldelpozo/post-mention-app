@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -25,15 +25,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-
-
 export default function PostItem({ text, timestamp }) {
     const classes = useStyles()
-    const [datetime, setDateTime] = useState('')
-
-    useEffect(() => {
-        setDateTime(parseToDateTime(timestamp))
-    }, [timestamp])
 
     const parseToDateTime = (timestamp) => {
         const addZero = (number) => {
@@ -50,7 +43,7 @@ export default function PostItem({ text, timestamp }) {
             <Message />
             <Paper className={classes.paper}>
                 <Typography variant="caption" color="textSecondary">
-                    {datetime}
+                    {parseToDateTime(timestamp)}
                 </Typography>
                 <Divider className={classes.divider} orientation="vertical" />
                 <HighlightMention text={text} />

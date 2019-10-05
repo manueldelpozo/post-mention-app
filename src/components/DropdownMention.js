@@ -64,6 +64,9 @@ export default function DropdownMention(props) {
     const classes = useStyles()
     const [text, setText] = useState('')
     const [currentMention, setCurrentMention] = useState('')
+    const [currentMentionPositionInit, setCurrentMentionPositionInit] = useState(-1)
+    const [currentMentionPositionEnd, setCurrentMentionPositionEnd] = useState(-1)
+    const [isMentioning, setIsMentioning] = useState(false)
     const [suggestions, setSuggestions] = useState([])
 
     useEffect(() => {
@@ -74,12 +77,28 @@ export default function DropdownMention(props) {
         setText(newValue)
     }
 
-    const onSuggestionsFetchRequested = ({ value }) => {
-        const lastWord = value.split(' ').slice(-1)[0]
-        const mention = lastWord.startsWith('@') ? lastWord.substr(1) : ''
+    const handleKey = () => (event) => {
+        const isArroba = (event.which === 64)
+        const isEmtySpace = (event.which === 32)
 
-        setCurrentMention(mention)
-        if (mention) {
+        if (isArroba) {
+            setCurrentMentionPositionInit(event.target.selectionStart)
+            setCurrentMentionPositionEnd(event.target.selectionStart + 1)
+            setIsMentioning(true)
+        } else if (isEmtySpace) {
+            setCurrentMentionPositionEnd(event.target.selectionStart)
+            setIsMentioning(false)
+        } else {
+            setCurrentMentionPositionEnd(currentMentionPositionEnd + 1)
+        }
+    }
+
+    const onSuggestionsFetchRequested = ({ value }) => {
+        const mentionTarget = value.substring(currentMentionPositionInit, currentMentionPositionEnd)
+        const mention = mentionTarget.startsWith('@') ? mentionTarget.substr(1) : ''
+
+        if (isMentioning && mention) {
+            setCurrentMention(mention)
             callBackendAPI(mention)
                 .then(response => {
                     setSuggestions(response.data.query.allusers)
@@ -123,6 +142,7 @@ export default function DropdownMention(props) {
                     placeholder: 'To mention type @',
                     value: text,
                     onChange: handleChange(),
+                    onKeyPress: handleKey()
                 }}
                 theme={{
                     container: classes.container,
